@@ -1,15 +1,20 @@
-version: "3.8"
 services:
   nginx:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: nginx_proxy_sub
+      args:
+        SITE_PORT: ${SITE_PORT}
+        SITE_HOST: ${SITE_HOST}
+        TLS_MODE: ${TLS_MODE}
+        SUB: ${SUB}
+        SERVERS: ${SERVERS}
+
     env_file:
       - .env
     ports:
       - ${SITE_PORT}:${SITE_PORT}
     volumes:
-      - ${PATH_SSL_KEY}/fullchain.pem:/etc/nginx/ssl/fullchain.pem
-      - ${PATH_SSL_KEY}/privkey.pem:/etc/nginx/ssl/privkey.pem 
+      - ${PATH_SSL_KEY}/fullchain.cer:/etc/nginx/ssl/fullchain.pem:ro
+      - ${PATH_SSL_KEY}/${SITE_HOST}.key:/etc/nginx/ssl/privkey.pem:ro
     restart: always
